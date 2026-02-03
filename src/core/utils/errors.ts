@@ -1,7 +1,7 @@
-import { ValidationError } from "../types/types";
+import { ValidationErrorType } from "../types/types";
 
 export const createErrorMessages = (
-  errors: ValidationError[],
-): { errorMessages: ValidationError[] } => {
+  errors: ValidationErrorType[],
+): { errorMessages: ValidationErrorType[] } => {
   return { errorMessages: errors };
 };

@@ -11,7 +11,7 @@ export enum HttpStatus {
   InternalServerError = 500,
 }
 
-export type ValidationError = {
+export type ValidationErrorType = {
   message: string;
   field: string;
 };
