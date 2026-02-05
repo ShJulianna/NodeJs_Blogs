@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from "express";
 import { BLOGS_PATH, POSTS_PATH, TESTING_PATH } from "./core/paths/paths";
 import { testRouter } from "./testing/routers/testing.router";
 import { blogsRouter } from "./blogs/routers/blogs.router";
-import {postsRouter} from "./posts/routers/posts.router";
+import { postsRouter } from "./posts/routers/posts.router";
 
 export const setupApp = (app: Express) => {
   app.use(express.json()); //middleware express.json() парсит JSON в теле запроса и добавляет его как объект в свойство body запроса (req.body.).
