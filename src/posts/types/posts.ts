@@ -12,4 +12,5 @@ export type PostDTO = {
   shortDescription: string; // Краткое превью
   content: string; // Основной текст (HTML или Markdown)
   blogId: string;
+  blogName?: string;
 };

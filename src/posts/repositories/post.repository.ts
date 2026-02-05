@@ -24,6 +24,7 @@ export const postsRepository = {
     post.shortDescription = dto.shortDescription || post.shortDescription;
     post.content = dto.content || post.content;
     post.blogId = dto.blogId || post.blogId;
+    post.blogName = dto.blogName || post.blogName;
   },
 
   delete(id: string): void {
