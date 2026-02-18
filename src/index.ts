@@ -16,5 +16,5 @@ const bootstrap = async () => {
   return app;
 };
 
-bootstrap();
+// bootstrap();
 export default bootstrap();
