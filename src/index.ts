@@ -10,11 +10,11 @@ const bootstrap = async () => {
 
   await runDB(SETTINGS.MONGO_URL);
 
-  app.listen(PORT, () => {
-    console.log(`Example app listening on port ${PORT}`);
-  });
+  // app.listen(PORT, () => {
+  //   console.log(`Example app listening on port ${PORT}`);
+  // });
   return app;
 };
 
-// bootstrap();
-export default bootstrap;
+bootstrap();
+export default bootstrap();
