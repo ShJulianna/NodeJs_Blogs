@@ -18,6 +18,8 @@ describe("Blogs API E2E Tests with DB Verification", () => {
     name: "Путь QA",
     description: "Тестирование, автоматизация тестов и обеспечение качества.",
     websiteUrl: "https://qa-pathway.ru",
+    createdAt: "",
+    isMembership: false,
   };
 
   beforeAll(async () => {
@@ -74,6 +76,8 @@ describe("Blogs API E2E Tests with DB Verification", () => {
         description:
           "Тестирование, автоматизация тестов и обеспечение качества.",
         websiteUrl: "https://qa-pathway.ru",
+        createdAt: "",
+        isMembership: false,
       };
       const res = await request(app)
         .post("/blogs")

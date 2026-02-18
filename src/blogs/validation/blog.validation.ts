@@ -18,8 +18,8 @@ const websiteUrlValidation = body("websiteUrl")
   .isString()
   .withMessage("websiteUrl should be string")
   .trim()
-    .isURL()
-    .withMessage("websiteUrl should be a valid URL")
+  .isURL()
+  .withMessage("websiteUrl should be a valid URL")
   .isLength({ min: 5, max: 100 })
   .withMessage("Length of websiteUrl is not correct");
 

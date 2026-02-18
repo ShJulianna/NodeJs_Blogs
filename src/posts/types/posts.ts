@@ -5,6 +5,7 @@ export type PostType = {
   content: string; // Основной текст (HTML или Markdown)
   blogId: string; // ID родительского блога
   blogName: string;
+  createdAt: string;
 };
 
 export type PostDTO = {
@@ -13,4 +14,5 @@ export type PostDTO = {
   content: string; // Основной текст (HTML или Markdown)
   blogId: string;
   blogName?: string;
+  createdAt?: string;
 };

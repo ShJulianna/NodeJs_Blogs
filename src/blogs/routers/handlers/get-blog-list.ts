@@ -5,16 +5,15 @@ import { createErrorMessages } from "../../../core/utils/errors";
 import { BlogType } from "../../types/blogs";
 import { blogsBD } from "../../../db/blogs";
 
-export function getBlogsListHandler(req: Request, res: Response) {
-  const blogs = blogRepository.findAll();
+export async function getBlogsListHandler(req: Request, res: Response) {
+  const blogs = await blogRepository.findAll();
   res.send(blogs);
 }
 
-export function getBlogHandler(req: Request, res: Response) {
+export async function getBlogHandler(req: Request, res: Response) {
   const id = `${req.params.id}`;
 
-  const blog = blogRepository.findById(id);
-
+  const blog = await blogRepository.findById(id);
   if (!blog) {
     res
       .status(HttpStatus.NotFound)
@@ -22,45 +21,57 @@ export function getBlogHandler(req: Request, res: Response) {
     return;
   }
 
-  res.send(blog);
-}
-
-export function createBlogHandler(req: Request, res: Response) {
-  const newBlog: BlogType = {
-    id: blogsBD.blogs.length
-      ? (blogsBD.blogs[blogsBD.blogs.length - 1].id + 1).toString()
-      : "1",
-    ...req.body,
+  const blogModel = {
+    ...blog,
+    id: blog._id.toString(),
   };
-  blogRepository.create(newBlog);
-  res.status(HttpStatus.Created).send(newBlog);
+  res.send(blogModel);
 }
 
-export function updateBlogHandler(req: Request, res: Response) {
+export async function createBlogHandler(req: Request, res: Response) {
+  try {
+    const newBlog: BlogType = {
+      ...req.body,
+      createdAt: new Date().toISOString(),
+    };
+    const createdBlog = await blogRepository.create(newBlog);
+    const blogModel = {
+      ...createdBlog,
+      id: createdBlog._id.toString(),
+    };
+    res.status(HttpStatus.Created).send(blogModel);
+  } catch (error) {
+    res.status(HttpStatus.BadRequest).send(error);
+  }
+}
+
+export async function updateBlogHandler(req: Request, res: Response) {
   const id = req.params.id as string;
-  const blog = blogRepository.findById(id);
+  const blog = await blogRepository.findById(id);
   if (!blog) {
     return res.sendStatus(HttpStatus.NotFound).send({
       errorsMessages: [
         {
-          message: "video not found",
+          message: "blog not found",
           field: "id",
         },
       ],
     });
   }
 
-  blogRepository.update(id, req.body);
+  await blogRepository.update(id, req.body);
   res.sendStatus(HttpStatus.NoContent);
 }
 
-export function deleteBlogHandler(req: Request, res: Response) {
+export async function deleteBlogHandler(req: Request, res: Response) {
   const id = `${req.params.id}`;
 
-  const video = blogRepository.findById(id);
-  if (!video) {
-    return res.sendStatus(HttpStatus.NotFound);
+  const blog = await blogRepository.findById(id);
+  if (!blog) {
+    return res
+      .sendStatus(HttpStatus.NotFound)
+      .send(createErrorMessages([{ field: "id", message: "blog not found" }]));
   }
-  blogRepository.delete(id);
+  await blogRepository.delete(id);
   res.sendStatus(HttpStatus.NoContent);
 }

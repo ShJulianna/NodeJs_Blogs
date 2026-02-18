@@ -1,60 +1,85 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../core/types/types";
-import { postsRepository } from "../../repositories/post.repository";
-import {blogsBD} from "../../../db/blogs";
+import { postRepository } from "../../repositories/post.repository";
+import { createErrorMessages } from "../../../core/utils/errors";
+import { PostType } from "../../types/posts";
 
-export const getPostsListHandler = (req: Request, res: Response) => {
-  const posts = postsRepository.findAll();
-  res.send(posts);
-};
+export async function getPostsListHandler(req: Request, res: Response) {
+  const posts = await postRepository.findAll();
 
-export const getPostByIdHandler = (req: Request, res: Response) => {
-  const id = req.params.id as string;
-  const post = postsRepository.findById(id);
+  const result = posts.map((p) => ({
+    ...p,
+    id: p._id.toString(),
+  }));
+
+  res.status(HttpStatus.Ok).send(result);
+}
+
+export async function getPostByIdHandler(req: Request, res: Response) {
+  const id = `${req.params.id}`;
+  const post = await postRepository.findById(id);
+
   if (!post) {
-    res.status(HttpStatus.NotFound).send({ message: "Post not found" });
+    res
+      .status(HttpStatus.NotFound)
+      .send(createErrorMessages([{ field: "id", message: "post not found" }]));
     return;
   }
-  res.send(post);
-};
 
-export const createPostHandler = (req: Request, res: Response) => {
-    const blogId = req.body.blogId as string;
-    const blog = blogsBD.blogs.find((b) => b.id === blogId);
-
-    const newPost = {
-      id: blogsBD.blogs.length
-          ? (blogsBD.blogs[blogsBD.blogs.length - 1].id + 1).toString()
-          : "1",
-    ...req.body,
-        blogName: blog?.name ?? "",
+  const postModel = {
+    ...post,
+    id: post._id.toString(),
   };
-  postsRepository.create(newPost);
-  res.status(HttpStatus.Created).send(newPost);
-};
 
-export const updatePostHandler = (req: Request, res: Response) => {
-  const id = req.params.id as string;
-    const blogId = req.body.blogId as string | undefined;
-    const blog = blogId ? blogsBD.blogs.find((b) => b.id === blogId) : undefined;
+  res.status(HttpStatus.Ok).send(postModel);
+}
 
-    try {
-        postsRepository.update(id, {
-            ...req.body,
-            ...(blog ? { blogName: blog.name } : {}),
-        });
-        res.sendStatus(HttpStatus.NoContent);
-    } catch {
-        res.status(HttpStatus.NotFound).send({ message: "Post not found" });
-    }
-};
-
-export const deletePostHandler = (req: Request, res: Response) => {
-  const id = req.params.id as string;
+export async function createPostHandler(req: Request, res: Response) {
   try {
-    postsRepository.delete(id);
-    res.sendStatus(HttpStatus.NoContent);
-  } catch {
-    res.status(HttpStatus.NotFound).send({ message: "Post not found" });
+    const newPost: PostType = {
+      ...req.body,
+      createdAt: new Date().toISOString(),
+    };
+
+    const createdPost = await postRepository.create(newPost);
+
+    const postModel = {
+      ...createdPost,
+      id: createdPost._id.toString(),
+    };
+
+    res.status(HttpStatus.Created).send(postModel);
+  } catch (error) {
+    res.status(HttpStatus.BadRequest).send(error);
   }
-};
+}
+
+export async function updatePostHandler(req: Request, res: Response) {
+  const id = req.params.id as string;
+
+  const post = await postRepository.findById(id);
+  if (!post) {
+    res
+      .status(HttpStatus.NotFound)
+      .send(createErrorMessages([{ field: "id", message: "post not found" }]));
+    return;
+  }
+
+  await postRepository.update(id, req.body);
+  res.sendStatus(HttpStatus.NoContent);
+}
+
+export async function deletePostHandler(req: Request, res: Response) {
+  const id = `${req.params.id}`;
+
+  const post = await postRepository.findById(id);
+  if (!post) {
+    res
+      .status(HttpStatus.NotFound)
+      .send(createErrorMessages([{ field: "id", message: "post not found" }]));
+    return;
+  }
+
+  await postRepository.delete(id);
+  res.sendStatus(HttpStatus.NoContent);
+}
