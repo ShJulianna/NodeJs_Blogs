@@ -34,5 +34,7 @@ setupApp(app);
 
 export default async function handler(req: Request, res: Response) {
   await init();
+  console.log("[handler] request:", req.method, req.url);
+
   return app(req, res);
 }
