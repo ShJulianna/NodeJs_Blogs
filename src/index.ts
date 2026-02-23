@@ -32,7 +32,7 @@ async function init() {
 
 setupApp(app);
 
-export default async function handler(req, res) {
+export default async function handler(req: Request, res: Response) {
   await init();
   return app(req, res);
 }
