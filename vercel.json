@@ -3,7 +3,7 @@
 
   "name": "blogs",
 
-  "builds": [{ "src": "src/index.js", "use": "@vercel/node" }],
+  "builds": [{ "src": "src/index.ts", "use": "@vercel/node" }],
 
-  "routes": [{ "src": "/(.*)", "dest": "src/index.js" }]
+  "routes": [{ "src": "/(.*)", "dest": "src/index.ts" }]
 }
