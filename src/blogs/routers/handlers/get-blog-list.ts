@@ -50,8 +50,10 @@ export async function getBlogHandler(req: Request, res: Response) {
 
 export async function createBlogHandler(req: Request, res: Response) {
   try {
-    const newBlog: BlogType = {
-      ...req.body,
+    const newBlog: any = {
+      name: req.body.name,
+      description: req.body.description,
+      websiteUrl: req.body.websiteUrl,
       createdAt: new Date().toISOString(),
       isMembership:
         typeof req.body.isMembership === "boolean"
@@ -60,8 +62,15 @@ export async function createBlogHandler(req: Request, res: Response) {
     };
     const createdBlog = await blogRepository.create(newBlog);
     const blogModel = {
-      ...createdBlog,
       id: createdBlog._id.toString(),
+      name: createdBlog.name,
+      description: createdBlog.description,
+      websiteUrl: createdBlog.websiteUrl,
+      createdAt: createdBlog.createdAt,
+      isMembership:
+        typeof (createdBlog as any).isMembership === "boolean"
+          ? (createdBlog as any).isMembership
+          : false,
     };
     res.status(HttpStatus.Created).send(blogModel);
   } catch (error) {
