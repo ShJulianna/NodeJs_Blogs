@@ -13,9 +13,14 @@ export const blogRepository = {
   },
 
   async create(newBlog: BlogType): Promise<WithId<BlogType>> {
-    const insertResult = await blogsCollection.insertOne(newBlog);
+    const blogToInsert: BlogType = {
+      ...newBlog,
+      createdAt: new Date().toISOString(),
+    };
 
-    return { ...newBlog, _id: insertResult.insertedId };
+    const insertResult = await blogsCollection.insertOne(blogToInsert);
+
+    return { ...blogToInsert, _id: insertResult.insertedId };
   },
 
   async update(id: string, dto: BlogDTO): Promise<void> {

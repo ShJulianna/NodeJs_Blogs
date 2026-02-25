@@ -7,26 +7,18 @@ import { blogRepository } from "../../../blogs/repositories/blog.repository";
 
 export async function getPostsListHandler(req: Request, res: Response) {
   const posts = await postRepository.findAll();
-
-  const result = [];
-  for (const p of posts) {
-    let blogName = (p as any).blogName;
-
-    if (typeof blogName !== "string" || !blogName) {
-      const blog = await blogRepository.findById(p.blogId);
-      blogName = blog?.name ?? "";
-    }
-
-    result.push({
-      id: p._id.toString(),
-      title: p.title,
-      shortDescription: p.shortDescription,
-      content: p.content,
-      blogId: p.blogId,
-      blogName,
-      createdAt: p.createdAt,
-    });
-  }
+  const result = posts.map((p) => ({
+    id: p._id.toString(),
+    title: p.title,
+    shortDescription: p.shortDescription,
+    content: p.content,
+    blogId: p.blogId,
+    blogName:
+      typeof (p as any).blogName === "string" && (p as any).blogName.length > 0
+        ? (p as any).blogName
+        : "",
+    createdAt: p.createdAt,
+  }));
 
   res.status(HttpStatus.Ok).send(result);
 }

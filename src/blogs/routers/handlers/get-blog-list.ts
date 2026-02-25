@@ -54,7 +54,6 @@ export async function createBlogHandler(req: Request, res: Response) {
       name: req.body.name,
       description: req.body.description,
       websiteUrl: req.body.websiteUrl,
-      createdAt: new Date().toISOString(),
       isMembership:
         typeof req.body.isMembership === "boolean"
           ? req.body.isMembership
