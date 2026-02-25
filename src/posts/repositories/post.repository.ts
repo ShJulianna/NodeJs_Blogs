@@ -13,7 +13,7 @@ export const postRepository = {
     return postsCollection.findOne({ _id: new ObjectId(id) });
   },
 
-  async create(newPost: PostType): Promise<WithId<PostType>> {
+  async create(newPost: any): Promise<WithId<PostType>> {
     const insertResult = await postsCollection.insertOne(newPost);
     return { ...newPost, _id: insertResult.insertedId };
   },
@@ -30,9 +30,6 @@ export const postRepository = {
           title: dto.title,
           shortDescription: dto.shortDescription,
           content: dto.content,
-          blogId: dto.blogId,
-          blogName: dto.blogName,
-          updatedAt: new Date().toISOString(),
         },
       },
     );

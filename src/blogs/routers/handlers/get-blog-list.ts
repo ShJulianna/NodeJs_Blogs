@@ -7,7 +7,19 @@ import { blogsBD } from "../../../db/blogs";
 
 export async function getBlogsListHandler(req: Request, res: Response) {
   const blogs = await blogRepository.findAll();
-  res.send(blogs);
+  const result = blogs.map((b) => ({
+    id: b._id.toString(),
+    name: b.name,
+    description: b.description,
+    websiteUrl: b.websiteUrl,
+    createdAt: b.createdAt,
+    isMembership:
+      typeof (b as any).isMembership === "boolean"
+        ? (b as any).isMembership
+        : false,
+  }));
+
+  res.status(HttpStatus.Ok).send(result);
 }
 
 export async function getBlogHandler(req: Request, res: Response) {
@@ -22,10 +34,18 @@ export async function getBlogHandler(req: Request, res: Response) {
   }
 
   const blogModel = {
-    ...blog,
     id: blog._id.toString(),
+    name: blog.name,
+    description: blog.description,
+    websiteUrl: blog.websiteUrl,
+    createdAt: blog.createdAt,
+    isMembership:
+      typeof (blog as any).isMembership === "boolean"
+        ? (blog as any).isMembership
+        : false,
   };
-  res.send(blogModel);
+
+  res.status(HttpStatus.Ok).send(blogModel);
 }
 
 export async function createBlogHandler(req: Request, res: Response) {
@@ -33,6 +53,10 @@ export async function createBlogHandler(req: Request, res: Response) {
     const newBlog: BlogType = {
       ...req.body,
       createdAt: new Date().toISOString(),
+      isMembership:
+        typeof req.body.isMembership === "boolean"
+          ? req.body.isMembership
+          : false,
     };
     const createdBlog = await blogRepository.create(newBlog);
     const blogModel = {
