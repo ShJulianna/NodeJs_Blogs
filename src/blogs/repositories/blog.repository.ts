@@ -28,7 +28,6 @@ export const blogRepository = {
           name: dto.name,
           description: dto.description,
           websiteUrl: dto.websiteUrl,
-          createdAt: dto.createdAt || new Date().toISOString(),
           isMembership: false,
         },
       },
