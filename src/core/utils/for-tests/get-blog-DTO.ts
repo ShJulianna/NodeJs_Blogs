@@ -1,6 +1,6 @@
-import { BlogDTO } from "../../../blogs/types/blogs";
+import { BlogType } from "../../../blogs/types/blogs";
 
-export function getBlogDto(): BlogDTO {
+export function getBlogDto(): BlogType {
   return {
     name: "Путь QA",
     description: "Тестирование, автоматизация тестов и обеспечение качества.",

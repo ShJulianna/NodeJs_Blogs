@@ -2,31 +2,62 @@ import { body } from "express-validator";
 
 const titleValidation = body("title")
   .isString()
+  .withMessage("title should be string")
   .trim()
-  .isLength({ min: 3, max: 30 })
-  .withMessage("Title length is not correct");
+  .isLength({ min: 1, max: 30 })
+  .withMessage("Length of title is not correct");
 
 const shortDescriptionValidation = body("shortDescription")
   .isString()
+  .withMessage("shortDescription should be string")
   .trim()
-  .isLength({ min: 5, max: 100 })
-  .withMessage("Short description length is not correct");
+  .isLength({ min: 1, max: 100 })
+  .withMessage("Length of shortDescription is not correct");
 
 const contentValidation = body("content")
   .isString()
+  .withMessage("content should be string")
   .trim()
   .isLength({ min: 1, max: 1000 })
-  .withMessage("Content should not be empty");
+  .withMessage("Length of content is not correct");
 
 const blogIdValidation = body("blogId")
   .isString()
+  .withMessage("blogId should be string")
   .trim()
-  .isLength({ min: 1 })
+  .notEmpty()
   .withMessage("blogId is required");
 
-export const postDTOValidation = [
+export const postCreateValidation = [
   titleValidation,
   shortDescriptionValidation,
   contentValidation,
   blogIdValidation,
+];
+
+export const postUpdateValidation = [
+  titleValidation,
+  shortDescriptionValidation,
+  contentValidation,
+  blogIdValidation,
+];
+
+export const postDTOValidation = [
+  body("title")
+    .trim()
+    .isString()
+    .isLength({ min: 1, max: 30 })
+    .withMessage("title must be between 1 and 30 characters"),
+
+  body("shortDescription")
+    .trim()
+    .isString()
+    .isLength({ min: 1, max: 100 })
+    .withMessage("shortDescription must be between 1 and 100 characters"),
+
+  body("content")
+    .trim()
+    .isString()
+    .isLength({ min: 1, max: 1000 })
+    .withMessage("content must be between 1 and 1000 characters"),
 ];

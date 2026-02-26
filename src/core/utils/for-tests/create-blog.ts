@@ -1,16 +1,20 @@
 import { Express } from "express";
 import request from "supertest";
 import { getBlogDto } from "./get-blog-DTO";
-import { BlogDTO, BlogType } from "../../../blogs/types/blogs";
+import {
+  BlogCreateInput,
+  BlogType,
+  BlogUpdateInput,
+} from "../../../blogs/types/blogs";
 import { BLOGS_PATH } from "../../paths/paths";
 import { generateBasicAuthToken } from "../../../tests/utils/generate-token";
 import { HttpStatus } from "../../types/types";
 
 export async function createBlog(
   app: Express,
-  blogDto?: BlogDTO,
+  blogDto?: BlogCreateInput,
 ): Promise<BlogType> {
-  const defaultBlogData: BlogDTO = getBlogDto();
+  const defaultBlogData: BlogCreateInput = getBlogDto();
 
   const testBlogData = { ...defaultBlogData, ...blogDto };
 
@@ -38,9 +42,9 @@ export async function getBlogById(
 export async function updateBlog(
   app: Express,
   blogId: string,
-  blogDto?: BlogDTO,
+  blogDto?: BlogUpdateInput,
 ): Promise<void> {
-  const defaultBlogData: BlogDTO = getBlogDto();
+  const defaultBlogData: BlogUpdateInput = getBlogDto();
 
   const testBlogData = { ...defaultBlogData, ...blogDto };
 

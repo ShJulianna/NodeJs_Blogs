@@ -9,7 +9,10 @@ import {
   getPostsListHandler,
   updatePostHandler,
 } from "./handlers/post-handlers";
-import { postDTOValidation } from "../validation/post.validation";
+import {
+  postCreateValidation,
+  postUpdateValidation,
+} from "../validation/post.validation";
 
 export const postsRouter = Router({});
 
@@ -24,7 +27,7 @@ postsRouter
   .post(
     "",
     superAdminGuardMiddleware,
-    postDTOValidation,
+    postCreateValidation,
     inputValidationResultMiddleware,
     createPostHandler,
   )
@@ -32,7 +35,7 @@ postsRouter
     "/:id",
     superAdminGuardMiddleware,
     idValidation,
-    postDTOValidation,
+    postUpdateValidation,
     inputValidationResultMiddleware,
     updatePostHandler,
   )

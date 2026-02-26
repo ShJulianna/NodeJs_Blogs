@@ -1,5 +1,4 @@
 import { PostDTO, PostType } from "../types/posts";
-import { postsDB } from "../../db/posts";
 import { ObjectId, WithId } from "mongodb";
 import { postsCollection } from "../../db/mongo.db";
 
@@ -13,7 +12,7 @@ export const postRepository = {
     return postsCollection.findOne({ _id: new ObjectId(id) });
   },
 
-  async create(newPost: any): Promise<WithId<PostType>> {
+  async create(newPost: PostType): Promise<WithId<PostType>> {
     const insertResult = await postsCollection.insertOne(newPost);
     return { ...newPost, _id: insertResult.insertedId };
   },

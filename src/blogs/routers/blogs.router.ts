@@ -10,6 +10,8 @@ import { idValidation } from "../../core/middlewares/id-validator.middleware";
 import { inputValidationResultMiddleware } from "../../core/middlewares/input-validation.middleware";
 import { blogDTOValidation } from "../validation/blog.validation";
 import { superAdminGuardMiddleware } from "../../auth/middlewares/admin.middleware";
+import { postDTOValidation } from "../../posts/validation/post.validation";
+import { createPostForBlogHandler } from "../../posts/routers/handlers/post-handlers";
 
 export const blogsRouter = Router({});
 
@@ -21,9 +23,16 @@ blogsRouter
     "",
     superAdminGuardMiddleware,
     blogDTOValidation,
-    blogDTOValidation,
     inputValidationResultMiddleware,
     createBlogHandler,
+  )
+  .post(
+    "/:id/posts",
+    superAdminGuardMiddleware,
+    idValidation,
+    postDTOValidation,
+    inputValidationResultMiddleware,
+    createPostForBlogHandler,
   )
   .put(
     "/:id",
