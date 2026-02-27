@@ -2,11 +2,29 @@ import { Request, Response } from "express";
 import { HttpStatus } from "../../../core/types/types";
 import { blogsService } from "../../application/blogs.service";
 import { handleBlogError } from "../../errors/BlogErrorHandler";
+import { BlogsQueryParams } from "../../types/blogs";
 
-export async function getBlogsListHandler(_req: Request, res: Response) {
+export async function getBlogsListHandler(req: Request, res: Response) {
   try {
-    const blogs = await blogsService.findMany();
-    res.status(HttpStatus.Ok).send(blogs);
+    const queryInput = req.query;
+    const {
+      searchNameTerm = null,
+      sortBy = "createdAt",
+      sortDirection = "desc",
+      pageNumber = "1",
+      pageSize = "10",
+    } = queryInput;
+
+    const normalizedQuery: BlogsQueryParams = {
+      searchNameTerm: searchNameTerm ? String(searchNameTerm) : null,
+      sortBy: String(sortBy) as any,
+      sortDirection: sortDirection === "asc" ? "asc" : "desc",
+      pageNumber: Number(pageNumber) || 1,
+      pageSize: Number(pageSize) || 10,
+    };
+
+    const blogList = await blogsService.findMany(normalizedQuery);
+    res.status(HttpStatus.Ok).send(blogList);
   } catch (error: unknown) {
     handleBlogError(error, res, "getBlogsListHandler");
   }

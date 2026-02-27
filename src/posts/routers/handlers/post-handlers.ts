@@ -1,29 +1,39 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../core/types/types";
-import { PostCreateInput, PostDTO, PostUpdateInput } from "../../types/posts";
+import {
+  PostCreateInput,
+  PostDTO,
+  PostsQueryParams,
+  PostUpdateInput,
+} from "../../types/posts";
 import { postsService } from "../../application/postsService";
 import { handlePostError } from "../../errors/PostErrorHandler";
+import { BlogsQueryParams } from "../../../blogs/types/blogs";
 
 // Типизированные запросы
 type CreatePostRequest = Request<{}, {}, PostCreateInput>;
 type UpdatePostRequest = Request<{ id: string }, {}, PostUpdateInput>;
 type IdRequest = Request<{ id: string }>;
 
-export async function getPostsListHandler(_req: Request, res: Response) {
+export async function getPostsListHandler(req: Request, res: Response) {
   try {
-    const posts = await postsService.findMany();
+    const queryInput = req.query;
+    const {
+      sortBy = "createdAt",
+      sortDirection = "desc",
+      pageNumber = "1",
+      pageSize = "10",
+    } = queryInput;
 
-    const result = posts.map((p) => ({
-      id: p._id.toString(),
-      title: p.title,
-      shortDescription: p.shortDescription,
-      content: p.content,
-      blogId: p.blogId,
-      blogName: p.blogName,
-      createdAt: p.createdAt,
-    }));
+    const normalizedQuery: PostsQueryParams = {
+      sortBy: String(sortBy) as any,
+      sortDirection: sortDirection === "asc" ? "asc" : "desc",
+      pageNumber: Number(pageNumber) || 1,
+      pageSize: Number(pageSize) || 10,
+    };
+    const posts = await postsService.findMany(normalizedQuery);
 
-    res.status(HttpStatus.Ok).send(result);
+    res.status(HttpStatus.Ok).send(posts);
   } catch (error: unknown) {
     handlePostError(error, res, "getPostsListHandler");
   }

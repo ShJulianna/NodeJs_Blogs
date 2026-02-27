@@ -1,10 +1,67 @@
-import { BlogCreateInput, BlogType, BlogUpdateInput } from "../types/blogs";
+import {
+  BlogCreateInput,
+  BlogListPaginatedOutput,
+  BlogsQueryParams,
+  BlogType,
+  BlogUpdateInput,
+} from "../types/blogs";
 import { ObjectId, WithId } from "mongodb";
 import { blogsCollection } from "../../db/mongo.db";
 
 export const blogRepository = {
-  async findAll(): Promise<WithId<BlogType>[]> {
-    return blogsCollection.find().toArray();
+  async findAll(params: BlogsQueryParams): Promise<BlogListPaginatedOutput> {
+    const {
+      searchNameTerm = null,
+      sortBy = "createdAt",
+      sortDirection = "desc",
+      pageNumber = 1,
+      pageSize = 3,
+    } = params;
+
+    // const page = Number(pageNumber) || 1;
+    // const size = Number(pageSize) || 3;
+
+    // 1. Фильтр по имени
+    const filter: Record<string, unknown> = {};
+    if (searchNameTerm && searchNameTerm.trim() !== "") {
+      filter.name = { $regex: searchNameTerm, $options: "i" }; // содержит подстроку, регистр не важен
+    }
+
+    // 2. Сортировка
+    const sort: Record<string, 1 | -1> = {};
+    sort[sortBy] = sortDirection === "asc" ? 1 : -1;
+
+    // 3. Пагинация
+    const skip = (pageNumber - 1) * pageSize;
+    const limit = pageSize;
+
+    const totalCount = await blogsCollection.countDocuments(filter);
+
+    const blogs = await blogsCollection
+      .find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
+    const items = blogs.map((b) => ({
+      id: b._id.toString(),
+      name: b.name,
+      description: b.description,
+      websiteUrl: b.websiteUrl,
+      createdAt: b.createdAt,
+      isMembership: b.isMembership,
+    }));
+
+    const pagesCount = Math.ceil(totalCount / pageSize);
+
+    return {
+      pagesCount,
+      page: pageNumber,
+      pageSize,
+      totalCount,
+      items,
+    };
   },
 
   async findById(id: string): Promise<WithId<BlogType> | null> {

@@ -4,6 +4,8 @@ import {
   PostType,
   PostCreateInput,
   PostUpdateInput,
+  PostsQueryParams,
+  PostsListPaginatedOutput,
 } from "../types/posts";
 import { postRepository } from "../repositories/post.repository";
 import { blogRepository } from "../../blogs/repositories/blog.repository";
@@ -12,8 +14,8 @@ import { blogsService } from "../../blogs/application/blogs.service";
 
 export const postsService = {
   // Получить список всех постов
-  async findMany(): Promise<WithId<PostType>[]> {
-    return postRepository.findAll();
+  async findMany(params: PostsQueryParams): Promise<PostsListPaginatedOutput> {
+    return postRepository.findAll(params);
   },
 
   // Получить пост или кинуть доменную ошибку

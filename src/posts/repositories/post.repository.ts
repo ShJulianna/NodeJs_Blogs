@@ -1,10 +1,58 @@
-import { PostDTO, PostType } from "../types/posts";
+import {
+  PostDTO,
+  PostsListPaginatedOutput,
+  PostsQueryParams,
+  PostType,
+} from "../types/posts";
 import { ObjectId, WithId } from "mongodb";
 import { postsCollection } from "../../db/mongo.db";
 
 export const postRepository = {
-  async findAll(): Promise<WithId<PostType>[]> {
-    return postsCollection.find().toArray();
+  async findAll(params: PostsQueryParams): Promise<PostsListPaginatedOutput> {
+    const {
+      sortBy = "createdAt",
+      sortDirection = "desc",
+      pageNumber: page = 1,
+      pageSize: size = 10,
+    } = params;
+
+    // Сортировка
+    const sort: Record<string, 1 | -1> = {};
+    sort[sortBy] = sortDirection === "asc" ? 1 : -1;
+
+    const skip: number = (page - 1) * size;
+    const limit: number = size;
+
+    // Всего документов
+    const totalCount = await postsCollection.countDocuments({});
+
+    // Получаем нужную "порцию"
+    const posts = await postsCollection
+      .find({})
+      .sort(sort)
+      .skip(Number.isFinite(skip) ? skip : 0)
+      .limit(Number.isFinite(limit) ? limit : 0)
+      .toArray();
+
+    const items = posts.map((p) => ({
+      id: p._id.toString(),
+      title: p.title,
+      shortDescription: p.shortDescription,
+      content: p.content,
+      blogId: p.blogId,
+      blogName: p.blogName,
+      createdAt: p.createdAt,
+    }));
+
+    const pagesCount = Math.ceil(totalCount / size);
+
+    return {
+      pagesCount,
+      page,
+      pageSize: size,
+      totalCount,
+      items,
+    };
   },
 
   async findById(id: string): Promise<WithId<PostType> | null> {

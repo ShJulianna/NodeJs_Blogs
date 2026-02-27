@@ -20,3 +20,19 @@ export interface BlogUpdateInput {
   description: string;
   websiteUrl: string;
 }
+
+export type BlogsQueryParams = {
+  searchNameTerm?: string | null;
+  sortBy?: keyof BlogType | "id" | "createdAt";
+  sortDirection?: "asc" | "desc";
+  pageNumber?: number;
+  pageSize?: number;
+};
+
+export type BlogListPaginatedOutput = {
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: (BlogType & { id: string })[];
+};

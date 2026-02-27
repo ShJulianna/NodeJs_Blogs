@@ -47,3 +47,18 @@ export interface PostDTO {
   shortDescription: string;
   content: string;
 }
+
+export type PostsQueryParams = {
+  sortBy?: keyof PostType | "id" | "createdAt";
+  sortDirection?: "asc" | "desc";
+  pageNumber?: number;
+  pageSize?: number;
+};
+
+export type PostsListPaginatedOutput = {
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: (PostType & { id: string })[];
+};

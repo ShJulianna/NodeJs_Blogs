@@ -1,11 +1,17 @@
 import { WithId } from "mongodb";
-import { BlogType, BlogCreateInput, BlogUpdateInput } from "../types/blogs";
+import {
+  BlogType,
+  BlogCreateInput,
+  BlogUpdateInput,
+  BlogsQueryParams,
+  BlogListPaginatedOutput,
+} from "../types/blogs";
 import { blogRepository } from "../repositories/blog.repository";
 import { BlogDomainError, BlogErrorCode } from "../errors/BlogDomainError";
 
 export const blogsService = {
-  async findMany(): Promise<WithId<BlogType>[]> {
-    return blogRepository.findAll();
+  async findMany(params: BlogsQueryParams): Promise<BlogListPaginatedOutput> {
+    return blogRepository.findAll(params);
   },
 
   async findByIdOrFail(id: string): Promise<WithId<BlogType>> {
