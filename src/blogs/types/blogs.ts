@@ -36,3 +36,10 @@ export type BlogListPaginatedOutput = {
   totalCount: number;
   items: (BlogType & { id: string })[];
 };
+
+export type BlogPostsQueryParams = {
+  sortBy?: string;
+  sortDirection?: "asc" | "desc";
+  pageNumber?: number;
+  pageSize?: number;
+};

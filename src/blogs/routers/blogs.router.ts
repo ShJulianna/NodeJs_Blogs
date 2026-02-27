@@ -4,6 +4,7 @@ import {
   deleteBlogHandler,
   getBlogHandler,
   getBlogsListHandler,
+  getPostsForBlogHandler,
   updateBlogHandler,
 } from "./handlers/get-blog-list";
 import { idValidation } from "../../core/middlewares/id-validator.middleware";
@@ -19,6 +20,12 @@ export const blogsRouter = Router({});
 blogsRouter
   .get("", getBlogsListHandler)
   .get("/:id", idValidation, inputValidationResultMiddleware, getBlogHandler)
+  .get(
+    "/:blogId/posts",
+    idValidation, // при необходимости можешь завести отдельную валидацию для blogId
+    inputValidationResultMiddleware,
+    getPostsForBlogHandler,
+  )
   .post(
     "",
     superAdminGuardMiddleware,

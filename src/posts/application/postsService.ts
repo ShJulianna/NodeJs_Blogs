@@ -1,4 +1,4 @@
-import { WithId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 import {
   PostDTO,
   PostType,
@@ -11,6 +11,7 @@ import { postRepository } from "../repositories/post.repository";
 import { blogRepository } from "../../blogs/repositories/blog.repository";
 import { PostDomainError, PostErrorCode } from "../errors/PostDomainError";
 import { blogsService } from "../../blogs/application/blogs.service";
+import { blogsCollection, postsCollection } from "../../db/mongo.db";
 
 export const postsService = {
   // Получить список всех постов
@@ -25,6 +26,46 @@ export const postsService = {
       throw new PostDomainError(PostErrorCode.PostNotFound, "Post not found");
     }
     return post as WithId<PostType>;
+  },
+
+  async findManyByBlogId(blogId: string, query: PostsQueryParams) {
+    const {
+      sortBy = "createdAt",
+      sortDirection = "desc",
+      pageNumber = 1,
+      pageSize = 10,
+    } = query;
+
+    // Проверяем, что блог существует
+    const blog = await blogsCollection.findOne({ _id: new ObjectId(blogId) });
+    if (!blog) return null;
+
+    const filter = { blogId };
+
+    const totalCount = await postsCollection.countDocuments(filter);
+
+    const itemsDb = await postsCollection
+      .find(filter)
+      .sort({ [sortBy]: sortDirection === "asc" ? 1 : -1 })
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .toArray();
+
+    return {
+      pagesCount: Math.ceil(totalCount / pageSize),
+      page: pageNumber,
+      pageSize,
+      totalCount,
+      items: itemsDb.map((p) => ({
+        id: p._id.toString(),
+        title: p.title,
+        shortDescription: p.shortDescription,
+        content: p.content,
+        blogId: p.blogId,
+        blogName: p.blogName,
+        createdAt: p.createdAt,
+      })),
+    };
   },
 
   // Создание поста
