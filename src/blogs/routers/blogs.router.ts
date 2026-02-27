@@ -7,7 +7,10 @@ import {
   getPostsForBlogHandler,
   updateBlogHandler,
 } from "./handlers/get-blog-list";
-import { idValidation } from "../../core/middlewares/id-validator.middleware";
+import {
+  blogIdValidation,
+  idValidation,
+} from "../../core/middlewares/id-validator.middleware";
 import { inputValidationResultMiddleware } from "../../core/middlewares/input-validation.middleware";
 import { blogDTOValidation } from "../validation/blog.validation";
 import { superAdminGuardMiddleware } from "../../auth/middlewares/admin.middleware";
@@ -22,7 +25,7 @@ blogsRouter
   .get("/:id", idValidation, inputValidationResultMiddleware, getBlogHandler)
   .get(
     "/:blogId/posts",
-    idValidation, // при необходимости можешь завести отдельную валидацию для blogId
+    blogIdValidation, // при необходимости можешь завести отдельную валидацию для blogId
     inputValidationResultMiddleware,
     getPostsForBlogHandler,
   )
