@@ -9,6 +9,7 @@ import {
 import { postsService } from "../../application/postsService";
 import { handlePostError } from "../../errors/PostErrorHandler";
 import { BlogsQueryParams } from "../../../blogs/types/blogs";
+import { PostDomainError, PostErrorCode } from "../../errors/PostDomainError";
 
 // Типизированные запросы
 type CreatePostRequest = Request<{}, {}, PostCreateInput>;
@@ -103,8 +104,14 @@ export async function createPostForBlogHandler(
     };
 
     res.status(HttpStatus.Created).send(postModel);
-  } catch (error: unknown) {
-    handlePostError(error, res, "createPostForBlogHandler");
+  } catch (e: unknown) {
+    if (e instanceof PostDomainError) {
+      if (e.code === PostErrorCode.BlogNotFound) {
+        res.sendStatus(HttpStatus.NotFound);
+        return;
+      }
+    }
+    res.sendStatus(HttpStatus.BadRequest);
   }
 }
 
