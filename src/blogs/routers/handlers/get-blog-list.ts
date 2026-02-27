@@ -34,7 +34,15 @@ export async function getBlogHandler(req: Request, res: Response) {
   const id = `${req.params.id}`;
 
   try {
-    const blog = await blogsService.findByIdOrFail(id);
+    const createdBlog = await blogsService.findByIdOrFail(id);
+    const blog = {
+      id: createdBlog._id.toString(),
+      name: createdBlog.name,
+      description: createdBlog.description,
+      websiteUrl: createdBlog.websiteUrl,
+      createdAt: createdBlog.createdAt,
+      isMembership: createdBlog.isMembership,
+    };
     res.status(HttpStatus.Ok).send(blog);
   } catch (error: unknown) {
     handleBlogError(error, res, "getBlogHandler");
@@ -44,7 +52,16 @@ export async function getBlogHandler(req: Request, res: Response) {
 export async function createBlogHandler(req: Request, res: Response) {
   try {
     const createdBlog = await blogsService.create(req.body);
-    res.status(HttpStatus.Created).send(createdBlog);
+
+    const blog = {
+      id: createdBlog._id.toString(),
+      name: createdBlog.name,
+      description: createdBlog.description,
+      websiteUrl: createdBlog.websiteUrl,
+      createdAt: createdBlog.createdAt,
+      isMembership: createdBlog.isMembership,
+    };
+    res.status(HttpStatus.Created).send(blog);
   } catch (error: unknown) {
     handleBlogError(error, res, "createBlogHandler");
   }
